@@ -2,7 +2,7 @@ name: Animated Drawing
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
     paths:
       - torchserve/**
 env:
