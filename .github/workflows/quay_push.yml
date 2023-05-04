@@ -1,0 +1,34 @@
+name: Animated Drawing
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - torchserve/**
+env:
+  BUILD_PATH: torchserve
+  REGISTRY_SERVER: quay.io
+  REGISTRY_NAMESPACE: katonic
+  USER: ${{secrets.USER}}
+  PASSWORD: ${{secrets.PASSWORD}}
+  REPOSITORY_NAME: playground
+  TAG: animated-drawings
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: docker login
+      run: |
+        docker login "${{ env.REGISTRY_SERVER }}" -u "${{ env.USER }}" -p "${{ env.PASSWORD }}"
+    
+    - name: Build the Docker image
+      run: |
+        cp -R "${{ env.BUILD_PATH }}"/* .
+        docker build . --file "${{ env.BUILD_PATH }}"/Dockerfile --tag "${{ env.REGISTRY_SERVER }}"/"${{ env.REGISTRY_NAMESPACE }}"/"${{ env.REPOSITORY_NAME }}":"${{ env.TAG }}"
+      
+    - name: Docker Push
+      run: docker push "${{ env.REGISTRY_SERVER }}"/"${{ env.REGISTRY_NAMESPACE }}"/"${{ env.REPOSITORY_NAME }}":"${{ env.TAG }}"
